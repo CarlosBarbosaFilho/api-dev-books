@@ -5,9 +5,9 @@ import (
 	"api/src/model"
 	"api/src/services"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -17,31 +17,47 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u model.User
-	if err = json.Unmarshal(requestBody, &u); err != nil {
+	var user model.User
+	if err = json.Unmarshal(requestBody, &user); err != nil {
 		messages.Error(w, http.StatusBadRequest, err)
 		return
 	}
-	userID, err := services.CreateUser(u)
+	if err := user.ValidUser(); err != nil {
+		messages.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	response, err := services.CreateUser(user)
 	if err != nil {
 		messages.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-	messages.Response(w, http.StatusCreated, fmt.Sprintf("User add with success, id %d", userID))
+	messages.Response(w, http.StatusCreated, response)
 }
+
 func ListUser(w http.ResponseWriter, r *http.Request) {
-	response, err := services.ReadUsers()
-	if err = json.NewEncoder(w).Encode(response); err != nil {
-		messages.Error(w, http.StatusUnprocessableEntity, err)
-	}
-	messages.Response(w, http.StatusOK, nil)
+	//response, err := services.ReadUsers()
+	//if err = json.NewEncoder(w).Encode(response); err != nil {
+	//	messages.Error(w, http.StatusUnprocessableEntity, err)
+	//}
+	//messages.Response(w, http.StatusOK, response)
 
 }
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("update user"))
 }
+
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("search user"))
+
+	userOuUserName := strings.ToLower(r.URL.Query().Get("user"))
+	var users []model.User
+	users, err := services.GetUserByNameOrUsername(userOuUserName)
+	if err != nil {
+		messages.Error(w, http.StatusUnprocessableEntity, err)
+	}
+	messages.Response(w, http.StatusOK, users)
+
 }
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("delete user"))
