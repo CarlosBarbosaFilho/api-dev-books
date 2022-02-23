@@ -36,3 +36,22 @@ func CreateUser(user model.User) (uint64, error) {
 
 	return uint64(lastID), nil
 }
+
+func ReadUser() (users []model.User, err error) {
+	rows, err := connection().Query("SELECT * FROM users")
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user model.User
+		err = rows.Scan(&user.Name, &user.UserName, &user.Email, &user.CreateAt)
+		if err != nil {
+			panic(err)
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

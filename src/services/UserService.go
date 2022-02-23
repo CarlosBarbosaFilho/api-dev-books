@@ -12,3 +12,11 @@ func CreateUser(user model.User) (uint64, error) {
 	}
 	return ID, nil
 }
+
+func ReadUsers() (users []model.User, err error) {
+	rows, err := repositories.ReadUser()
+	if err != nil {
+		panic(err)
+	}
+	return rows, nil
+}

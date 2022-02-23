@@ -14,7 +14,7 @@ func main() {
 	fmt.Println("########## Server is running on port 5000 ###########")
 
 	r := router.CreateRouter()
-	err := http.ListenAndServe("localhost:5000", r)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r)
 	if err != nil {
 		return
 	}
