@@ -36,11 +36,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListUser(w http.ResponseWriter, r *http.Request) {
-	//response, err := services.ReadUsers()
-	//if err = json.NewEncoder(w).Encode(response); err != nil {
-	//	messages.Error(w, http.StatusUnprocessableEntity, err)
-	//}
-	//messages.Response(w, http.StatusOK, response)
+	response, err := services.ReadUsers()
+	if err = json.NewEncoder(w).Encode(response); err != nil {
+		messages.Error(w, http.StatusUnprocessableEntity, err)
+	}
+	messages.Response(w, http.StatusOK, response)
 
 }
 
@@ -59,6 +59,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	messages.Response(w, http.StatusOK, users)
 
 }
+
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("delete user"))
 }

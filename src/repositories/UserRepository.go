@@ -56,7 +56,7 @@ func CreateUser(user model.User) (model.User, error) {
 }
 
 func ReadUser() (users []model.User, err error) {
-	rows, err := connection().Query("SELECT * FROM users")
+	rows, err := connection().Query("SELECT name, user_name, email, create_at FROM users")
 	if err != nil {
 		panic(err)
 	}
