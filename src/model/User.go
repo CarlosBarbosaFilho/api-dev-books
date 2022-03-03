@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"github.com/badoux/checkmail"
 	"time"
 )
 
@@ -14,14 +15,14 @@ type User struct {
 	CreateAt time.Time `json:"createAt,omitempty"`
 }
 
-func (user *User) ValidUser() error {
-	if err := user.validateFields(); err != nil {
+func (user *User) ValidUser(isCreateUser bool) error {
+	if err := user.validateFields(isCreateUser); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (user *User) validateFields() error {
+func (user *User) validateFields(isCreateUser bool) error {
 	if user.Name == "" {
 		return errors.New("name is mandatory")
 	}
@@ -31,7 +32,12 @@ func (user *User) validateFields() error {
 	if user.Email == "" {
 		return errors.New("email is mandatory")
 	}
-	if user.Password == "" {
+
+	if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return errors.New("e-mail is invalid, please check the format")
+	}
+
+	if isCreateUser && user.Password == "" {
 		return errors.New("password is mandatory")
 	}
 	return nil

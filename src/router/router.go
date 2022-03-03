@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CreateRouter() *mux.Router {
+func CreateRouterUser() *mux.Router {
 	r := mux.NewRouter()
 	return routes.ConfigureRouter(r)
 }

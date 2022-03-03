@@ -28,6 +28,13 @@ var routesUsers = []Route{
 		Description:             "Delete user by id",
 	},
 	{
+		URI:                     "/users/{id}",
+		Method:                  http.MethodGet,
+		Function:                controllers.GetUserById,
+		MandatoryAuthentication: false,
+		Description:             "Return user by id",
+	},
+	{
 		URI:                     "/users-by-name-or-username",
 		Method:                  http.MethodGet,
 		Function:                controllers.GetUser,
