@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/src/authentication"
 	"api/src/messages"
 	"api/src/model"
 	"api/src/services"
@@ -26,5 +27,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		messages.Response(w, http.StatusInternalServerError, err)
 	}
 
-	messages.Response(w, http.StatusOK, user)
+	token, _ := authentication.GenerateToken(user.ID)
+	//messages.Response(w, http.StatusOK, user)
+	w.Write([]byte(token))
 }
