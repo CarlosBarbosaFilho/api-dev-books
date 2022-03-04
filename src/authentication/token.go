@@ -1,16 +1,19 @@
 package authentication
 
 import (
+	"api/src/config"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/dgrijalva/jwt-go"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
 func GenerateToken(userId uint64) (string, error) {
-	var err error
-	//Creating Access Token
-	os.Setenv("ACCESS_SECRET", "secret") //this should be in an env file
+
+	os.Setenv("ACCESS_SECRET", os.Getenv(string(config.SecretKey))) //this should be in an env file
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["user_id"] = userId
@@ -21,4 +24,39 @@ func GenerateToken(userId uint64) (string, error) {
 		return "", err
 	}
 	return token, nil
+}
+
+func VerifyToken(r *http.Request) (*jwt.Token, error) {
+	tokenString := ExtractToken(r)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("ACCESS_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
+}
+
+func ExtractToken(r *http.Request) string {
+	bearToken := r.Header.Get("Authorization")
+	strArr := strings.Split(bearToken, " ")
+	if len(strArr) == 2 {
+		return strArr[1]
+	}
+	return ""
+}
+
+func TokenValid(r *http.Request) error {
+	token, err := VerifyToken(r)
+	if err != nil {
+		return err
+	}
+	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+		return err
+	}
+	return nil
 }

@@ -17,7 +17,7 @@ var routesUsers = []Route{
 		URI:                     "/users",
 		Method:                  http.MethodGet,
 		Function:                controllers.ListUser,
-		MandatoryAuthentication: false,
+		MandatoryAuthentication: true,
 		Description:             "Return all users",
 	},
 	{

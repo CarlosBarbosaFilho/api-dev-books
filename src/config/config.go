@@ -11,6 +11,7 @@ import (
 var (
 	ConnectionDatabase = ""
 	Port               = 0
+	SecretKey          []byte
 )
 
 func InitializerVariableEnvironment() {
@@ -28,4 +29,5 @@ func InitializerVariableEnvironment() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+	SecretKey = []byte("SECRET_KEY")
 }
